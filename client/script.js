@@ -3,6 +3,8 @@ import user from './assets/user.svg';
 
 const form = document.querySelector('form');
 const chatContainer = document.querySelector('#chat_container');
+const mic = document.getElementById("mic");
+const mic_off = document.getElementById("mic_off");
 
 let loadInterval;
 
@@ -27,7 +29,7 @@ function typeText(element, text) {
       index++;
     }
     else {
-      clearInterval(interval); // userd to stop setInterval method
+      clearInterval(interval); // used to stop setInterval method
     }
   }, 20)
 }
@@ -112,4 +114,38 @@ form.addEventListener('keyup', (e)=>{
   if(e.keyCode===13) {
     handelSubmit(e);
   }
+})
+
+// const recognition = new SpeechRecognition();
+
+// let canVC = window.webkitSpeechRecognition || window.SpeechRecognition;
+// let speech = window.webkitSpeechRecognition;
+let speech = true;
+window.SpeechRecognition = window.webkitSpeechRecognition;
+let recognition = new SpeechRecognition();
+recognition.interimResults = true;
+
+
+mic_off.addEventListener('click', ()=>{
+  console.log(speech);
+  if(speech==true) {
+    mic_off.style.display = "none";
+    mic.style.display = "unset";
+    recognition.addEventListener('result', e => {
+      const transcript = Array.from(e.results)
+      .map(result => result[0])
+      .map(result => result.transcript);
+      document.getElementById('promptArea').value = transcript;
+    })
+    if (speech == true) recognition.start();
+    recognition.addEventListener('soundend', ()=>{
+      mic.style.display = 'none';
+      mic_off.style.display = 'unset';
+      recognition.stop();
+    })
+  }
+  else {
+    alert("Your browser does not support voice recording");
+  }
+
 })
